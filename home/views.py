@@ -1,6 +1,9 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+
+from home.models import Todo
 
 
 # Create your views here.
@@ -54,5 +57,37 @@ def register(request):
         return render(request, 'register.html')
 
 
+@login_required(login_url='login')
 def todo(request):
-    return render(request, 'todo.html')
+
+    if request.method == 'POST':
+        name = request.POST['todo_name']
+        description = request.POST['todo_description']
+        status = 'Pending'
+
+        task = Todo(name=name, description=description, status=status)
+        task.save()
+        return redirect('todo')
+
+    else:
+
+        task = Todo.objects.all()
+
+        return render(request, 'todo.html', {'todos': task})
+
+
+def logout(request):
+    auth.logout(request)
+    return redirect('login')
+
+
+def complete(request):
+    id = request.GET.get('id')
+    Todo.objects.filter(id=id).update(status='Completed')
+    return redirect('todo')
+
+
+def delete(request):
+    id = request.GET.get('id')
+    Todo.objects.filter(id=id).delete()
+    return redirect('todo')

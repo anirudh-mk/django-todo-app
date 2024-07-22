@@ -16,28 +16,39 @@
             <span class="todo-logo">Todo</span>
         </div>
         <div class="navbar-right">
-            <span class="username">SREEJITH</span> <!-- Placeholder for username -->
-            <button onclick="location.href='login.html'">Logout</button>
+            {% if user.is_authenticated %}
+            <span class="username">{{user.username}}</span>
+            {%  endif %}
+            <!-- Placeholder for username -->
+            <button onclick="location.href='logout'">Logout</button>
         </div>
     </nav>
     <div class="todo-form-container">
-        <form method="post">
+        <form method="post" action="todo">
+            {% csrf_token %}
             <input type="text" name="todo_name" placeholder="Todo Name" required>
             <input type="text" name="todo_description" placeholder="Todo Description" required>
             <button type="submit">Create</button>
         </form>
     </div>
+    {%for todo in todos %}
     <div class="todo-list-container">
         <div class="todo-item">
             <div class="todo-info">
-                <span class="todo-name">Todo Name</span>
-                <span class="todo-description">Todo Description</span>
+                <span class="todo-name">{{todo.name}}</span>
+                <span class="todo-description">{{todo.description}}</span>
+                <span class="todo-description">{{todo.status}}</span>
             </div>
             <div class="todo-actions">
-                <button class="edit-btn">Edit</button>
-                <button class="delete-btn">Delete</button>
+                {% if todo.status != 'Completed'%}
+                <button class="edit-btn"><a href="complete?id={{todo.id}}">Compelete</a></button>
+                {%endif%}
+                <button class="delete-btn"><a href="delete?id={{todo.id}}">Delete</a></button>
             </div>
         </div>
+
     </div>
+{%endfor%}
+
 </body>
 </html>
