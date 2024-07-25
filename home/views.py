@@ -3,7 +3,7 @@ from django.contrib.auth.models import User, auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
-from home.models import Todo
+from home.models import Todo, UserTodoLink
 
 
 # Create your views here.
@@ -59,19 +59,24 @@ def register(request):
 
 @login_required(login_url='login')
 def todo(request):
+    user = request.user
 
     if request.method == 'POST':
         name = request.POST['todo_name']
         description = request.POST['todo_description']
         status = 'Pending'
 
-        task = Todo(name=name, description=description, status=status)
+        task = Todo(name=name, description=description, status=status, user=user)
         task.save()
+
+        # user_todo_link = UserTodoLink(todo=task, user=user)
+        # user_todo_link.save()
+
         return redirect('todo')
 
     else:
 
-        task = Todo.objects.all()
+        task = Todo.objects.filter(user=user).all()
 
         return render(request, 'todo.html', {'todos': task})
 
