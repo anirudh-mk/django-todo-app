@@ -10,6 +10,9 @@ from home.models import Todo, UserTodoLink
 
 
 def login(request):
+    if request.user.is_authenticated:
+        return redirect('todo')
+
     if request.method == 'POST':
 
         username = request.POST['username']

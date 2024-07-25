@@ -12,6 +12,10 @@ class Todo(models.Model):
     status = models.CharField(max_length=100)
     user = models.ForeignKey(User, on_delete=models.DO_NOTHING)
 
+    class Meta:
+        db_table = 'todo'
+        ordering = ['-status']
+
 
 class UserTodoLink(models.Model):
     id = models.CharField(max_length=36, primary_key=True, default=uuid.uuid4())
